@@ -1,0 +1,56 @@
+#define macro CONSTRUCTOR() = takes (0) returns (0) {
+    // Initialize storage slot 0 with a default value (e.g., 42)
+    0x2a              // Push 42 (0x2a in hex) onto the stack
+    0x00              // Push storage slot 0
+    sstore            // Store 42 in slot 0
+}
+
+#define macro SET_VALUE() = takes (0) returns (0) {
+    // Calldata: First 4 bytes are function selector, next 32 bytes are the value
+    0x04              // Offset to skip function selector
+    calldataload      // Load the 32-byte value from calldata
+    0x00              // Storage slot 0
+    sstore            // Store the value in slot 0
+}
+
+#define macro GET_VALUE() = takes (0) returns (0) {
+    0x00              // Storage slot 0
+    sload             // Load the value from slot 0
+    0x00              // Memory slot 0
+    mstore            // Store the value in memory
+    0x20              // Return 32 bytes
+    0x00              // Memory offset
+    return            // Return the value
+}
+
+#define macro MAIN() = takes (0) returns (0) {
+    // Check calldata size and route to appropriate function
+    calldatasize      // Get calldata size
+    0x00              // Push 0
+    eq                // Check if calldata is empty (constructor case)
+    iszero            // Invert the result
+    [CONSTRUCTOR]     // Jump to constructor if true
+    jumpi             // Jump if calldata is empty
+
+    // Load first 4 bytes of calldata (function selector)
+    0x00              // Offset 0
+    calldataload      // Load calldata
+    0xe0              // Shift left by 224 bits to get first 4 bytes
+    shl               // Shift operation
+    dup1              // Duplicate for comparison
+
+    // Function selector for setValue (e.g., keccak256("setValue(uint256)"))
+    0x60fe47b1        // Example selector for setValue
+    eq                // Check if it matches
+    [SET_VALUE]       // Jump dest for setValue
+    jumpi             // Jump if match
+
+    // Function selector for getValue (e.g., keccak256("getValue()"))
+    0x6ffa1caa        // Example selector for getValue
+    eq                // Check if it matches
+    [GET_VALUE]       // Jump dest for getValue
+    jumpi             // Jump if match
+
+    // Revert if no match
+    0x00 0x00 revert
+}
