@@ -1,0 +1,5 @@
+#define macro MAIN() = takes(0) returns(1) {
+    caller // Get caller (sender) address
+    0x00 mstore // Store it in memory at position 0x00
+    0x20 0x00 return // Return the address (32 bytes)
+}
