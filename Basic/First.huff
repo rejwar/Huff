@@ -1,0 +1,10 @@
+#define macro MAIN() = takes(0) returns(1) {
+    // Store "Hello, Huff!" in memory
+    0x48656c6c6f2c204875666621 // "Hello, Huff!" in hex
+    0x00 mstore // Store it at memory location 0
+
+    // Return the string from memory
+    0x0c // Length of "Hello, Huff!"
+    0x00 // Starting memory location
+    return
+}
