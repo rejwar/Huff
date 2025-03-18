@@ -1,0 +1,5 @@
+#define macro MAIN() = takes(0) returns(1) {
+    0x48656c6c6f20576f726c6421 // Hex for "Hello World!"
+    0x00 mstore // Store the string in memory
+    0x0c 0x00 return // Return the string (12 bytes)
+}
