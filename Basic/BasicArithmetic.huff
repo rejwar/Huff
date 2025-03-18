@@ -1,0 +1,8 @@
+#define macro MAIN() = takes(0) returns(1) {
+    // Add two numbers and return the result
+    0x05 // First number
+    0x03 // Second number
+    add // Perform addition
+    0x00 mstore // Store result in memory at position 0x00
+    0x20 0x00 return // Return the result (32 bytes)
+}
