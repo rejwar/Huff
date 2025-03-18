@@ -1,0 +1,7 @@
+#define macro MAIN() = takes(0) returns(1) {
+    0x0a // Load first value (10)
+    0x05 // Load second value (5)
+    gt   // Check if 10 > 5
+    0x00 mstore // Store result in memory (1 if true, 0 if false)
+    0x20 0x00 return // Return the result (32 bytes)
+}
