@@ -1,0 +1,60 @@
+#define macro OWNER() = takes(0) returns(1)
+    // Push the owner address onto the stack
+    0x1234567890abcdef1234567890abcdef12345678 // Replace this with the desired address
+
+#define macro CONSTRUCTOR() = takes(0) returns(0)
+    // Store the owner address in slot 0
+    OWNER()
+    0x00 mstore
+
+#define macro SET() = takes(2) returns(0)
+    // Load the sender address
+    caller
+    0x00 mload eq
+    push1 0x10
+    jumpi
+    invalid // Halt execution if the sender is not the owner
+
+    // Store the value
+    calldataload(0x04) // Load key from calldata
+    calldataload(0x24) // Load value from calldata
+    sstore            // Store it in storage
+
+0x10:
+    stop
+
+#define macro GET() = takes(1) returns(1)
+    // Load the key from calldata and retrieve the value from storage
+    calldataload(0x04) // Load key from calldata
+    sload              // Retrieve value from storage
+
+#define macro MAIN() = takes(0) returns(0)
+    calldatasize
+    0x00 eq
+    push1 0x20
+    jumpi
+    invalid // Halt if no calldata is provided
+
+    // Check the function signature
+    calldataload(0x00)
+    dup1 0x60fe47b1 eq // SET() selector
+    push1 0x40
+    jumpi
+    dup1 0x6d4ce63c eq // GET() selector
+    push1 0x50
+    jumpi
+
+    // Unknown function selector
+    invalid
+
+0x20:
+    CONSTRUCTOR()
+    stop
+
+0x40:
+    SET()
+    stop
+
+0x50:
+    GET()
+    stop
